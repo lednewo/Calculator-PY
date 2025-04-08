@@ -1,63 +1,20 @@
 import flet as ft
+from controller import CalculatorController
+from buttons import DigitButton, ActionButton, ExtraActionButton
 
 def main(page: ft.Page):
-    page.window.width = 400
-    page.window.height = 600
-    page.window.resizable = False
     page.title = "Calc App"
-
-    expression = ""
 
     result = ft.Text(value="0", size=40, color=ft.Colors.WHITE)
 
-    def update_result():
-        result.value = expression or "0"
+    def update_result(new_text):
+        result.value = new_text
         page.update()
 
-    
-    def button_click(e):
-        nonlocal expression
-        text = e.control.text
+    controller = CalculatorController(update_result)
 
-        if text == "AC":
-            expression = "0"
-        elif text == "=":
-            try:
-                expression = str(eval(expression))
-            except:
-                expression = "Erro"
-        elif text == "%":
-            try:
-                expression = str(eval(expression) / 100)
-            except:
-                expression = "Erro"
-        else:
-            expression += text
-
-        update_result()
-
-    
-    class CalcButton(ft.ElevatedButton):
-        def __init__(self, text, expand=1):
-            super().__init__(text=text, expand=expand, on_click=button_click)
-
-    class DigitButton(CalcButton):
-        def __init__(self, text, expand=1):
-            super().__init__(text=text, expand=expand)
-            self.bgcolor = ft.Colors.WHITE24
-            self.color = ft.Colors.WHITE
-
-    class ActionButton(CalcButton):
-        def __init__(self, text):
-            super().__init__(text=text)
-            self.bgcolor = ft.Colors.ORANGE
-            self.color = ft.Colors.WHITE
-
-    class ExtraActionButton(CalcButton):
-        def __init__(self, text):
-            super().__init__(text=text)
-            self.bgcolor = ft.Colors.BLUE_GREY_100
-            self.color = ft.Colors.BLACK
+    def on_button_click(e):
+        controller.handle_input(e.control.text) 
 
     page.add(
         ft.Container(
@@ -70,41 +27,41 @@ def main(page: ft.Page):
                     ft.Row(controls=[result], alignment="end"),
                     ft.Row(
                         controls=[
-                            ExtraActionButton(text="AC"),
-                            ExtraActionButton(text=" "),
-                            ExtraActionButton(text="%"),
-                            ActionButton(text="/"),
+                            ExtraActionButton("AC", on_button_click),
+                            ExtraActionButton(" ", on_button_click),
+                            ExtraActionButton("%", on_button_click),
+                            ActionButton("/", on_button_click),
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            DigitButton(text="7"),
-                            DigitButton(text="8"),
-                            DigitButton(text="9"),
-                            ActionButton(text="*"),
+                            DigitButton("7", on_button_click),
+                            DigitButton("8", on_button_click),
+                            DigitButton("9", on_button_click),
+                            ActionButton("*", on_button_click),
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            DigitButton(text="4"),
-                            DigitButton(text="5"),
-                            DigitButton(text="6"),
-                            ActionButton(text="-"),
+                            DigitButton("4", on_button_click),
+                            DigitButton("5", on_button_click),
+                            DigitButton("6", on_button_click),
+                            ActionButton("-", on_button_click),
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            DigitButton(text="1"),
-                            DigitButton(text="2"),
-                            DigitButton(text="3"),
-                            ActionButton(text="+"),
+                            DigitButton("1", on_button_click),
+                            DigitButton("2", on_button_click),
+                            DigitButton("3", on_button_click),
+                            ActionButton("+", on_button_click),
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            DigitButton(text="0", expand=2),
-                            DigitButton(text="."),
-                            ActionButton(text="="),
+                            DigitButton("0", on_button_click, expand=2),
+                            DigitButton(".", on_button_click),
+                            ActionButton("=", on_button_click),
                         ]
                     ),
                 ]
@@ -112,6 +69,6 @@ def main(page: ft.Page):
         )
     )
 
-    update_result()
+    update_result("0")
 
 ft.app(target=main)
